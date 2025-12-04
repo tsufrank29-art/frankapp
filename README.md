@@ -15,3 +15,51 @@
 - `index.html`：頁面骨架與彈窗結構。
 - `styles.css`：深色系介面與卡片、按鈕、彈窗的樣式設定。
 - `app.js`：前端互動邏輯、資料管理、導覽與 toast/彈窗控制。
+
+## 資料庫設計（實際上可由後端實作）
+以下為對應目前功能頁的關聯式資料表，型別以常見的 PostgreSQL 風格描述，可依實際後端調整：
+
+### 資料表
+| Table | 目的 | 主要欄位 |
+| --- | --- | --- |
+| `users` | 儲存使用者資訊與暱稱 | `id (PK, uuid)`, `email (unique)`, `password_hash`, `nickname`, `avatar_url`, `created_at`, `updated_at` |
+| `rooms` | 房間主檔 | `id (PK, uuid)`, `name (varchar)`, `cycle (enum: short, mid, long, value)`, `intro (text)`, `owner_id (FK -> users.id)`, `member_count (int, default 1)`, `created_at`, `updated_at` |
+| `room_members` | 房間成員（包含房主） | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `user_id (FK -> users.id)`, `role (enum: owner, member)`, `joined_at` |
+| `operations` | 操作記錄 | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `actor_id (FK -> users.id)`, `stock_code (varchar)`, `stock_name (varchar)`, `shares (int)`, `action (enum: buy, add, trim, sell)`, `note (text)`, `happened_on (date)`, `created_at`, `updated_at` |
+| `operation_comments` | 對操作卡片留言 | `id (PK, uuid)`, `operation_id (FK -> operations.id)`, `user_id (FK -> users.id)`, `content (text)`, `created_at` |
+| `room_comments` | 對房間層級留言（若未來需要） | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `user_id (FK -> users.id)`, `content (text)`, `created_at` |
+
+### ER 流程摘要
+- `users` 與 `rooms`：`rooms.owner_id` 指向房主；房主也會在 `room_members` 中擁有一筆 `role=owner` 的紀錄。
+- `room_members` 對應使用者加入/退出房間的流程，`member_count` 可由觸發器或 API 層在加入/退出時更新。
+- `operations` 連結房間與操作發起者，供房主在 Screen 02/04 管理操作記錄。
+- `operation_comments` 儲存留言，顯示在各操作卡片下方；若需房間層留言可使用 `room_comments`。
+
+## API 設計（範例草案）
+以下端點以 REST 風格描述，可搭配 JWT/Session 驗證（未詳述認證流程）。
+
+### 房間與導覽
+- `GET /rooms?excludeOwned=true&sort=member_desc`：房間總覽（預設不含自己創建的房間、可依人數排序）。
+- `POST /rooms`：創建房間，body：`{name, cycle, intro}`，回傳新房間並將使用者加入 `room_members`。
+- `GET /rooms/owned`：我創建的房間列表（含房間詳細與操作記錄）。
+- `GET /rooms/joined`：我加入的房間列表。
+- `GET /rooms/{roomId}`：房間詳情（人數、操作記錄、留言）。
+- `DELETE /rooms/{roomId}`：房主移除房間，連帶刪除操作與留言。
+
+### 加入 / 退出
+- `POST /rooms/{roomId}/join`：加入房間，建立 `room_members` 紀錄並更新 `rooms.member_count`。
+- `POST /rooms/{roomId}/leave`：退出房間，移除成員並更新人數。
+
+### 操作記錄（房主限定）
+- `POST /rooms/{roomId}/operations`：新增操作記錄，body：`{stock_code, stock_name, shares, action, note, happened_on}`。
+- `PATCH /operations/{opId}`：編輯操作記錄。
+- `DELETE /operations/{opId}`：刪除操作記錄。
+
+### 留言（房主與訪客皆可）
+- `POST /operations/{opId}/comments`：在操作卡片留言，body：`{content}`。
+- `GET /operations/{opId}/comments`：取得該操作的留言串。
+- `DELETE /operation-comments/{commentId}`：刪除留言（可依權限限制只有作者或房主）。
+
+### 個人主頁
+- `GET /me`：取得暱稱、創建的房間與加入的房間清單。
+- `PATCH /me`：更新暱稱或頭像。
