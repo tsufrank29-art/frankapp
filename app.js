@@ -135,6 +135,11 @@ document.getElementById("createRoomButton").addEventListener("click", () => {
   openModal(modals.create);
 });
 
+document.getElementById("floatingCreate").addEventListener("click", () => {
+  createRoomForm.reset();
+  openModal(modals.create);
+});
+
 document.getElementById("homeButton").addEventListener("click", () => navigate("overview"));
 document.getElementById("profileButton").addEventListener("click", () => navigate("profile"));
 
@@ -312,7 +317,11 @@ function renderCreated() {
     <div class="main">
       <div class="title-row">
         <h3>${createdRoom.name}</h3>
-        <div class="badge">人數 ${createdRoom.memberCount}</div>
+        <div class="badge">房主 ${createdRoom.creator}</div>
+      </div>
+      <div class="tag-list">
+        <span class="pill">👥 ${createdRoom.memberCount}</span>
+        <span class="pill">⏱️ ${createdRoom.cycle}</span>
       </div>
       <div class="meta-grid">
         <div><span class="lead-label">操作週期</span>${createdRoom.cycle}</div>
@@ -385,9 +394,12 @@ function createRoomCard(room, context) {
         <h3>${room.name}</h3>
         <span class="badge">${room.creator}</span>
       </div>
+      <div class="tag-list">
+        <span class="pill">👥 ${room.memberCount}</span>
+        <span class="pill">⏱️ ${room.cycle}</span>
+      </div>
       <div class="meta-grid">
-        <div><span class="lead-label">房間人數</span>${room.memberCount}</div>
-        <div><span class="lead-label">操作週期</span>${room.cycle}</div>
+        <div><span class="lead-label">房主</span>${room.creator}</div>
         <div><span class="lead-label">最近標的</span>${opPreview}</div>
       </div>
     </div>
@@ -434,9 +446,12 @@ function createOperationCard(roomId, op, editable) {
         <h3>${op.code} ${op.name}</h3>
         <span class="badge">${op.action}</span>
       </div>
+      <div class="tag-list">
+        <span class="pill">📅 ${op.date}</span>
+        <span class="pill">📦 ${op.shares} 張</span>
+      </div>
       <div class="meta-grid">
         <div><span class="lead-label">張數</span>${op.shares}</div>
-        <div><span class="lead-label">日期</span>${op.date}</div>
         <div><span class="lead-label">操作說明</span>${op.notes || "－"}</div>
       </div>
       <div class="tag-list"><span class="lead-label">留言</span></div>

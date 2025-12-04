@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="status-icons" aria-hidden="true">
+      <span class="dot"></span><span class="dot"></span><span class="bar"></span>
+    </div>
+  </div>
   <div class="app-shell">
     <header class="top-bar">
       <button class="title" id="homeButton">股神俱樂部</button>
@@ -21,8 +27,11 @@
     <main id="screenContainer">
       <section id="screen-overview" class="screen active">
         <div class="screen-header">
-          <h2>房間總覽</h2>
-          <button class="outline" id="overviewSort">房間人數多 → 少</button>
+          <div>
+            <p class="eyebrow">探索社群</p>
+            <h2>房間總覽</h2>
+          </div>
+          <button class="outline icon-left" id="overviewSort">⇅ 房間人數</button>
         </div>
         <div id="overviewEmpty" class="empty">目前沒有可加入的房間</div>
         <div id="overviewList" class="card-grid"></div>
@@ -30,7 +39,10 @@
 
       <section id="screen-created" class="screen">
         <div class="screen-header">
-          <h2>我創建的房間</h2>
+          <div>
+            <p class="eyebrow">我的房間</p>
+            <h2>我創建的房間</h2>
+          </div>
           <button class="primary" id="addRecordButton">新增操作記錄</button>
         </div>
         <div id="createdContent" class="stack"></div>
@@ -41,8 +53,11 @@
 
       <section id="screen-joined" class="screen">
         <div class="screen-header">
-          <h2>我加入的房間</h2>
-          <button class="outline" id="joinedSort">房間人數多 → 少</button>
+          <div>
+            <p class="eyebrow">社群紀錄</p>
+            <h2>我加入的房間</h2>
+          </div>
+          <button class="outline icon-left" id="joinedSort">⇅ 房間人數</button>
         </div>
         <div id="joinedEmpty" class="empty">您尚未加入任何房間</div>
         <div id="joinedList" class="card-grid"></div>
@@ -69,10 +84,12 @@
       </section>
     </main>
 
+    <button class="fab" id="floatingCreate" aria-label="快速創建房間">＋</button>
+
     <nav class="tab-bar">
-      <button class="tab active" data-target="overview">房間總覽</button>
-      <button class="tab" data-target="created">我創建的房間</button>
-      <button class="tab" data-target="joined">我加入的房間</button>
+      <button class="tab active" data-target="overview">🏠 房間</button>
+      <button class="tab" data-target="created">✏️ 創建</button>
+      <button class="tab" data-target="joined">⭐ 加入</button>
     </nav>
   </div>
 

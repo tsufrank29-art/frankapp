@@ -1,12 +1,12 @@
 :root {
-  --bg: #0b1021;
-  --card: #111730;
-  --accent: #33b18d;
-  --border: #223055;
-  --text: #e9efff;
-  --muted: #a7b3d1;
+  --bg: #050915;
+  --card: #0f1628;
+  --accent: #49d2a7;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f3f6ff;
+  --muted: #9fb1d1;
   --danger: #e25260;
-  --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  --shadow: 0 22px 40px rgba(0, 0, 0, 0.55);
 }
 
 * {
@@ -16,18 +16,62 @@
 body {
   margin: 0;
   font-family: "Noto Sans TC", "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(circle at 20% 20%, rgba(51, 177, 141, 0.08), transparent 30%),
-    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.06), transparent 25%),
+  background: radial-gradient(circle at 30% 20%, rgba(73, 210, 167, 0.16), transparent 32%),
+    radial-gradient(circle at 70% 0%, rgba(255, 255, 255, 0.06), transparent 30%),
     var(--bg);
   color: var(--text);
   min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+}
+
+.status-bar {
+  width: min(430px, 100%);
+  margin: 0 auto 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+
+.status-bar .status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-bar .dot,
+.status-bar .bar {
+  display: inline-block;
+  background: var(--muted);
+  border-radius: 999px;
+}
+
+.status-bar .dot {
+  width: 6px;
+  height: 6px;
+  opacity: 0.65;
+}
+
+.status-bar .bar {
+  width: 22px;
+  height: 6px;
+  opacity: 0.4;
 }
 
 .app-shell {
-  max-width: 1200px;
+  width: min(430px, 100%);
   margin: 0 auto;
-  padding: 16px 16px 88px;
+  padding: 8px 12px 100px;
   position: relative;
+  background: rgba(15, 22, 40, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(14px);
 }
 
 .top-bar {
@@ -36,9 +80,8 @@ body {
   align-items: center;
   padding: 12px 16px;
   border: 1px solid var(--border);
-  background: rgba(17, 23, 48, 0.9);
-  border-radius: 14px;
-  backdrop-filter: blur(8px);
+  background: linear-gradient(120deg, rgba(73, 210, 167, 0.14), rgba(15, 22, 40, 0.9));
+  border-radius: 18px;
   box-shadow: var(--shadow);
   position: sticky;
   top: 0;
@@ -47,7 +90,7 @@ body {
 
 .title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   background: none;
   border: none;
   color: var(--text);
@@ -60,15 +103,20 @@ body {
   gap: 8px;
 }
 
+main {
+  padding: 8px 2px 0;
+}
+
 button {
   cursor: pointer;
   border: none;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-weight: 600;
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-weight: 650;
+  letter-spacing: 0.3px;
   color: var(--text);
   background: var(--card);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
 }
 
 button:hover {
@@ -82,8 +130,9 @@ button:active {
 }
 
 button.primary {
-  background: linear-gradient(135deg, #3dd59c, #2a8d71);
-  color: #081015;
+  background: linear-gradient(135deg, #54e4b8, #1f8c72);
+  color: #04100f;
+  box-shadow: 0 12px 26px rgba(84, 228, 184, 0.25);
 }
 
 button.ghost {
@@ -92,7 +141,7 @@ button.ghost {
 
 button.outline {
   border: 1px solid var(--accent);
-  background: rgba(51, 177, 141, 0.08);
+  background: rgba(73, 210, 167, 0.08);
 }
 
 button.danger {
@@ -113,7 +162,7 @@ button.avatar {
 
 .screen {
   display: none;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .screen.active {
@@ -125,23 +174,49 @@ button.avatar {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 4px;
+}
+
+.screen-header h2 {
+  margin: 0;
 }
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
 .card {
-  background: rgba(17, 23, 48, 0.85);
+  background: linear-gradient(160deg, rgba(73, 210, 167, 0.08), rgba(17, 23, 48, 0.92));
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 14px;
   display: flex;
   gap: 12px;
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(73, 210, 167, 0.45), rgba(255, 255, 255, 0.05));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
 }
 
 .card .main {
@@ -158,12 +233,12 @@ button.avatar {
 }
 
 .badge {
-  background: rgba(51, 177, 141, 0.2);
+  background: rgba(73, 210, 167, 0.2);
   color: var(--text);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  border: 1px solid rgba(51, 177, 141, 0.4);
+  border: 1px solid rgba(73, 210, 167, 0.4);
 }
 
 .meta-grid {
@@ -184,6 +259,17 @@ button.avatar {
   color: var(--text);
 }
 
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -194,9 +280,9 @@ button.avatar {
 .empty {
   text-align: center;
   color: var(--muted);
-  padding: 32px;
+  padding: 32px 24px;
   border: 1px dashed var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(17, 23, 48, 0.5);
 }
 
@@ -236,17 +322,19 @@ button.avatar {
 
 .tab-bar {
   position: fixed;
-  bottom: 12px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(17, 23, 48, 0.92);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  display: flex;
+  background: rgba(15, 22, 40, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   padding: 6px;
   box-shadow: var(--shadow);
   z-index: 15;
+  width: min(430px, 100%);
 }
 
 .tab {
@@ -255,24 +343,27 @@ button.avatar {
   color: var(--muted);
   padding: 10px 14px;
   border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
 }
 
 .tab.active {
-  background: rgba(51, 177, 141, 0.2);
+  background: rgba(73, 210, 167, 0.2);
   color: var(--text);
-  border: 1px solid rgba(51, 177, 141, 0.5);
+  border: 1px solid rgba(73, 210, 167, 0.5);
 }
 
 .toast {
   position: fixed;
   top: 16px;
-  right: 16px;
+  right: 50%;
+  transform: translateX(50%) translateY(-10px);
   background: rgba(17, 23, 48, 0.95);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px 16px;
   opacity: 0;
-  transform: translateY(-10px);
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   box-shadow: var(--shadow);
@@ -280,7 +371,7 @@ button.avatar {
 
 .toast.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(50%) translateY(0);
 }
 
 .backdrop {
@@ -298,8 +389,8 @@ button.avatar {
 
 .modal {
   width: min(520px, 90vw);
-  background: #0e1325;
-  border-radius: 14px;
+  background: #0b1021;
+  border-radius: 18px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   max-height: 90vh;
@@ -385,6 +476,27 @@ button.icon {
   margin-right: 6px;
 }
 
+.fab {
+  position: fixed;
+  right: calc(50% - min(430px, 100%) / 2 + 16px);
+  bottom: 82px;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(145deg, #54e4b8, #1f8c72);
+  color: #04100f;
+  font-size: 22px;
+  box-shadow: 0 18px 40px rgba(84, 228, 184, 0.35);
+  z-index: 16;
+}
+
+.icon-left::before {
+  content: "";
+  display: inline-block;
+  margin-right: 6px;
+}
+
 @media (max-width: 720px) {
   .top-bar {
     flex-direction: column;
@@ -395,9 +507,5 @@ button.icon {
   .screen-header {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .card-grid {
-    grid-template-columns: 1fr;
   }
 }
