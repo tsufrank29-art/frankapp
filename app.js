@@ -400,7 +400,7 @@ function createRoomCard(room, context) {
         <span class="dot" aria-hidden="true"></span>
         <span>👥 ${room.memberCount} 人</span>
       </div>
-      <div class="section-lead">最近標的：<strong>${opPreview}</strong></div>
+      <div class="section-lead">操作標的：<strong>${opPreview}</strong></div>
       <div class="inline-meta">
         <span class="pill">⏱️ 操作週期：${room.cycle}</span>
         <span class="pill">🧭 簡介：${room.intro || "－"}</span>
