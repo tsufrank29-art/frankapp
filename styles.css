@@ -66,13 +66,22 @@ body {
 .app-shell {
   width: min(420px, 100%);
   margin: 0 auto;
-  padding: 10px 12px 110px;
+  padding: 10px 12px 0;
   position: relative;
   background: var(--panel);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 26px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .top-bar {
@@ -104,8 +113,10 @@ body {
   gap: 6px;
 }
 
-main {
-  padding: 10px 4px 0;
+.page-layout__content {
+  padding: 10px 4px 72px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 button {
@@ -401,19 +412,21 @@ h3 {
 
 .tab-bar {
   position: fixed;
-  bottom: 16px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(15, 22, 40, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
-  padding: 6px;
-  box-shadow: var(--shadow);
-  z-index: 15;
-  width: min(420px, 100%);
+  padding: 6px 10px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.35);
+  z-index: 50;
+  width: 100%;
+  height: 56px;
+  max-width: 420px;
+  border-radius: 0 0 26px 26px;
 }
 
 .tab {

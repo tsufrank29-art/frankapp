@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>股神俱樂部</title>
+  <link rel="stylesheet" href="index.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,7 +14,7 @@
       <span class="dot"></span><span class="dot"></span><span class="bar"></span>
     </div>
   </div>
-  <div class="app-shell">
+  <div class="app-shell page-layout">
     <header class="top-bar">
       <button class="title" id="homeButton">股神俱樂部</button>
       <div class="header-actions">
@@ -24,7 +25,7 @@
       </div>
     </header>
 
-    <main id="screenContainer">
+    <main id="screenContainer" class="page-layout__content pb-safe-bottom">
       <section id="screen-overview" class="screen active">
         <div class="screen-header">
           <div>
@@ -86,7 +87,7 @@
 
     <button class="fab" id="floatingCreate" aria-label="快速創建房間">＋</button>
 
-    <nav class="tab-bar">
+    <nav class="tab-bar pb-safe-bottom">
       <button class="tab active" data-target="overview">🏠 房間</button>
       <button class="tab" data-target="created">✏️ 創建</button>
       <button class="tab" data-target="joined">⭐ 加入</button>
