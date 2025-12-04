@@ -1,6 +1,7 @@
 :root {
   --bg: #050915;
   --card: #0f1628;
+  --panel: rgba(13, 19, 34, 0.95);
   --accent: #49d2a7;
   --border: rgba(255, 255, 255, 0.08);
   --text: #f3f6ff;
@@ -23,11 +24,11 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 12px;
+  padding: 16px 12px 24px;
 }
 
 .status-bar {
-  width: min(430px, 100%);
+  width: min(420px, 100%);
   margin: 0 auto 8px;
   display: flex;
   justify-content: space-between;
@@ -63,11 +64,11 @@ body {
 }
 
 .app-shell {
-  width: min(430px, 100%);
+  width: min(420px, 100%);
   margin: 0 auto;
-  padding: 8px 12px 100px;
+  padding: 10px 12px 110px;
   position: relative;
-  background: rgba(15, 22, 40, 0.88);
+  background: var(--panel);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 26px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
@@ -78,7 +79,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 1px solid var(--border);
   background: linear-gradient(120deg, rgba(73, 210, 167, 0.14), rgba(15, 22, 40, 0.9));
   border-radius: 18px;
@@ -100,19 +101,19 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 main {
-  padding: 8px 2px 0;
+  padding: 10px 4px 0;
 }
 
 button {
   cursor: pointer;
   border: none;
-  border-radius: 12px;
-  padding: 11px 14px;
-  font-weight: 650;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 700;
   letter-spacing: 0.3px;
   color: var(--text);
   background: var(--card);
@@ -142,6 +143,7 @@ button.ghost {
 button.outline {
   border: 1px solid var(--accent);
   background: rgba(73, 210, 167, 0.08);
+  color: var(--text);
 }
 
 button.danger {
@@ -189,6 +191,16 @@ button.avatar {
   margin: 0;
 }
 
+h2,
+h3 {
+  margin: 0;
+}
+
+.section-lead {
+  margin: 0 0 8px;
+  color: var(--muted);
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -196,12 +208,12 @@ button.avatar {
 }
 
 .card {
-  background: linear-gradient(160deg, rgba(73, 210, 167, 0.08), rgba(17, 23, 48, 0.92));
+  background: linear-gradient(170deg, rgba(73, 210, 167, 0.08), rgba(17, 23, 48, 0.9));
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 14px;
+  padding: 14px 16px;
   display: flex;
-  gap: 12px;
+  gap: 14px;
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
@@ -228,17 +240,30 @@ button.avatar {
 .card .title-row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
 }
 
 .badge {
-  background: rgba(73, 210, 167, 0.2);
+  background: rgba(73, 210, 167, 0.16);
   color: var(--text);
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  border: 1px solid rgba(73, 210, 167, 0.4);
+  border: 1px solid rgba(73, 210, 167, 0.35);
+}
+
+.card-body {
+  flex: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 
 .meta-grid {
@@ -257,6 +282,19 @@ button.avatar {
 
 .record-grid span {
   color: var(--text);
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.stat-row strong {
+  color: var(--text);
+  font-size: 15px;
 }
 
 .pill {
@@ -289,6 +327,46 @@ button.avatar {
 .stack {
   display: grid;
   gap: 12px;
+}
+
+.room-card {
+  align-items: stretch;
+}
+
+.room-card .card-body {
+  gap: 8px;
+}
+
+.room-topline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.room-meta .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.room-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.room-actions button {
+  min-width: 96px;
+  height: 100%;
 }
 
 .bottom-action {
@@ -334,7 +412,7 @@ button.avatar {
   padding: 6px;
   box-shadow: var(--shadow);
   z-index: 15;
-  width: min(430px, 100%);
+  width: min(420px, 100%);
 }
 
 .tab {
@@ -457,6 +535,20 @@ button.icon {
   gap: 8px;
 }
 
+.op-card {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.op-card .card-body {
+  width: 100%;
+}
+
+.op-card .actions {
+  width: 100%;
+  justify-content: flex-end;
+}
+
 .comment-item {
   color: var(--muted);
   font-size: 14px;
@@ -470,6 +562,17 @@ button.icon {
   color: var(--muted);
 }
 
+.text-muted {
+  color: var(--muted);
+}
+
+.inline-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .lead-label {
   color: var(--muted);
   font-weight: 600;
@@ -478,10 +581,10 @@ button.icon {
 
 .fab {
   position: fixed;
-  right: calc(50% - min(430px, 100%) / 2 + 16px);
-  bottom: 82px;
-  width: 52px;
-  height: 52px;
+  right: calc(50% - min(420px, 100%) / 2 + 14px);
+  bottom: 86px;
+  width: 54px;
+  height: 54px;
   border-radius: 16px;
   border: none;
   background: linear-gradient(145deg, #54e4b8, #1f8c72);

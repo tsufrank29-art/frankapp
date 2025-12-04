@@ -312,20 +312,21 @@ function renderCreated() {
   }
   removeWrapper.style.display = "flex";
   const headerCard = document.createElement("div");
-  headerCard.className = "card";
+  headerCard.className = "card room-card";
   headerCard.innerHTML = `
-    <div class="main">
-      <div class="title-row">
+    <div class="card-body">
+      <div class="room-topline">
         <h3>${createdRoom.name}</h3>
         <div class="badge">房主 ${createdRoom.creator}</div>
       </div>
-      <div class="tag-list">
-        <span class="pill">👥 ${createdRoom.memberCount}</span>
-        <span class="pill">⏱️ ${createdRoom.cycle}</span>
+      <div class="room-meta">
+        <span>👥 ${createdRoom.memberCount} 人</span>
+        <span class="dot"></span>
+        <span>⏱️ ${createdRoom.cycle}</span>
       </div>
-      <div class="meta-grid">
-        <div><span class="lead-label">操作週期</span>${createdRoom.cycle}</div>
-        <div><span class="lead-label">房間介紹</span>${createdRoom.intro || "－"}</div>
+      <div class="inline-meta">
+        <span class="pill">操作週期：${createdRoom.cycle}</span>
+        <span class="pill">房間介紹：${createdRoom.intro || "－"}</span>
       </div>
     </div>
   `;
@@ -380,7 +381,7 @@ function updateProfile() {
 
 function createRoomCard(room, context) {
   const card = document.createElement("div");
-  card.className = "card";
+  card.className = "card room-card";
   const opPreview = room.operations
     .slice()
     .sort((a, b) => (a.date < b.date ? 1 : -1))
@@ -389,24 +390,26 @@ function createRoomCard(room, context) {
     .join("、") || "無";
 
   card.innerHTML = `
-    <div class="main">
-      <div class="title-row">
+    <div class="card-body">
+      <div class="room-topline">
         <h3>${room.name}</h3>
-        <span class="badge">${room.creator}</span>
+        <span class="badge">${room.cycle}</span>
       </div>
-      <div class="tag-list">
-        <span class="pill">👥 ${room.memberCount}</span>
-        <span class="pill">⏱️ ${room.cycle}</span>
+      <div class="room-meta">
+        <span>房主 ${room.creator}</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>👥 ${room.memberCount} 人</span>
       </div>
-      <div class="meta-grid">
-        <div><span class="lead-label">房主</span>${room.creator}</div>
-        <div><span class="lead-label">最近標的</span>${opPreview}</div>
+      <div class="section-lead">最近標的：<strong>${opPreview}</strong></div>
+      <div class="inline-meta">
+        <span class="pill">⏱️ 操作週期：${room.cycle}</span>
+        <span class="pill">🧭 簡介：${room.intro || "－"}</span>
       </div>
     </div>
   `;
 
   const actions = document.createElement("div");
-  actions.className = "actions";
+  actions.className = "room-actions";
   const isJoined = joinedRoomIds.has(room.id);
   const btn = document.createElement("button");
   if (context === "overview") {
@@ -439,22 +442,18 @@ function createRoomCard(room, context) {
 
 function createOperationCard(roomId, op, editable) {
   const card = document.createElement("div");
-  card.className = "card";
+  card.className = "card op-card";
   card.innerHTML = `
-    <div class="main">
-      <div class="title-row">
+    <div class="card-body">
+      <div class="room-topline">
         <h3>${op.code} ${op.name}</h3>
         <span class="badge">${op.action}</span>
       </div>
-      <div class="tag-list">
+      <div class="inline-meta">
         <span class="pill">📅 ${op.date}</span>
         <span class="pill">📦 ${op.shares} 張</span>
       </div>
-      <div class="meta-grid">
-        <div><span class="lead-label">張數</span>${op.shares}</div>
-        <div><span class="lead-label">操作說明</span>${op.notes || "－"}</div>
-      </div>
-      <div class="tag-list"><span class="lead-label">留言</span></div>
+      <div class="stat-row"><strong>操作說明</strong><span>${op.notes || "－"}</span></div>
     </div>
   `;
 
@@ -492,8 +491,15 @@ function createOperationCard(roomId, op, editable) {
 
   const commentList = document.createElement("div");
   commentList.className = "comment-list";
+  const commentTitle = document.createElement("div");
+  commentTitle.className = "text-muted";
+  commentTitle.textContent = "留言";
+  commentList.appendChild(commentTitle);
   if (!op.comments.length) {
-    commentList.innerHTML = `<div class="comment-item">目前沒有留言</div>`;
+    const empty = document.createElement("div");
+    empty.className = "comment-item";
+    empty.textContent = "目前沒有留言";
+    commentList.appendChild(empty);
   } else {
     op.comments.forEach((msg) => {
       const item = document.createElement("div");
