@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>股神俱樂部</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="status-icons" aria-hidden="true">
+      <span class="dot"></span><span class="dot"></span><span class="bar"></span>
+    </div>
+  </div>
+  <div class="app-shell">
+    <header class="top-bar">
+      <button class="title" id="homeButton">股神俱樂部</button>
+      <div class="header-actions">
+        <button class="ghost" id="createRoomButton">創建房間</button>
+        <button class="avatar" id="profileButton" aria-label="前往個人主頁">
+          <span>Me</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="screenContainer">
+      <section id="screen-overview" class="screen active">
+        <div class="screen-header">
+          <div>
+            <p class="eyebrow">探索社群</p>
+            <h2>房間總覽</h2>
+          </div>
+          <button class="outline icon-left" id="overviewSort">⇅ 房間人數</button>
+        </div>
+        <div id="overviewEmpty" class="empty">目前沒有可加入的房間</div>
+        <div id="overviewList" class="card-grid"></div>
+      </section>
+
+      <section id="screen-created" class="screen">
+        <div class="screen-header">
+          <div>
+            <p class="eyebrow">我的房間</p>
+            <h2>我創建的房間</h2>
+          </div>
+          <button class="primary" id="addRecordButton">新增操作記錄</button>
+        </div>
+        <div id="createdContent" class="stack"></div>
+        <div class="bottom-action" id="removeRoomWrapper">
+          <button class="danger" id="removeRoomButton">移除房間</button>
+        </div>
+      </section>
+
+      <section id="screen-joined" class="screen">
+        <div class="screen-header">
+          <div>
+            <p class="eyebrow">社群紀錄</p>
+            <h2>我加入的房間</h2>
+          </div>
+          <button class="outline icon-left" id="joinedSort">⇅ 房間人數</button>
+        </div>
+        <div id="joinedEmpty" class="empty">您尚未加入任何房間</div>
+        <div id="joinedList" class="card-grid"></div>
+      </section>
+
+      <section id="screen-visitor" class="screen">
+        <div class="screen-header">
+          <h2 id="visitorTitle">房間頁 - 訪客</h2>
+          <div class="room-meta" id="visitorMeta"></div>
+        </div>
+        <div id="visitorContent" class="stack"></div>
+        <div class="bottom-action">
+          <button class="danger" id="leaveRoomButton">退出房間</button>
+        </div>
+      </section>
+
+      <section id="screen-profile" class="screen">
+        <h2>個人主頁</h2>
+        <div class="profile-card">
+          <div class="row"><span class="label">使用者暱稱</span><span id="profileNickname"></span></div>
+          <div class="row"><span class="label">創建的房間</span><span id="profileCreated"></span></div>
+          <div class="row"><span class="label">加入的房間</span><div id="profileJoined"></div></div>
+        </div>
+      </section>
+    </main>
+
+    <button class="fab" id="floatingCreate" aria-label="快速創建房間">＋</button>
+
+    <nav class="tab-bar">
+      <button class="tab active" data-target="overview">🏠 房間</button>
+      <button class="tab" data-target="created">✏️ 創建</button>
+      <button class="tab" data-target="joined">⭐ 加入</button>
+    </nav>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <div id="modalBackdrop" class="backdrop hidden">
+    <div id="modalCreateRoom" class="modal hidden">
+      <div class="modal-header">
+        <h3>創建房間</h3>
+        <button class="icon" data-close>✕</button>
+      </div>
+      <form id="createRoomForm" class="modal-body">
+        <label>房間名稱（必填）<input name="name" required /></label>
+        <label>操作週期（必填）
+          <select name="cycle" required>
+            <option value="">請選擇</option>
+            <option value="短線波段">短線波段</option>
+            <option value="中期波段">中期波段</option>
+            <option value="長期波段">長期波段</option>
+            <option value="價值投資">價值投資</option>
+          </select>
+        </label>
+        <label>房間介紹（選填）<textarea name="intro" rows="2"></textarea></label>
+        <div class="modal-actions">
+          <button type="submit" class="primary block">確認創建</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="modalRecord" class="modal hidden">
+      <div class="modal-header">
+        <h3 id="recordModalTitle">新增操作記錄</h3>
+        <button class="icon" data-close>✕</button>
+      </div>
+      <form id="recordForm" class="modal-body">
+        <input type="hidden" name="recordId" />
+        <label>股票代號（純數字）<input name="code" pattern="\d+" required /></label>
+        <label>股票名稱（文字）<input name="name" required /></label>
+        <label>股票張數（純數字）<input name="shares" pattern="\d+" required /></label>
+        <label>日期<input type="date" name="date" required /></label>
+        <label>操作
+          <select name="action" required>
+            <option value="買進">買進</option>
+            <option value="加碼">加碼</option>
+            <option value="減碼">減碼</option>
+            <option value="賣出">賣出</option>
+          </select>
+        </label>
+        <label>操作說明<textarea name="notes" rows="2"></textarea></label>
+        <div class="modal-actions">
+          <button type="submit" class="primary block">送出</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="modalComment" class="modal hidden">
+      <div class="modal-header">
+        <h3>我要留言</h3>
+        <button class="icon" data-close>✕</button>
+      </div>
+      <form id="commentForm" class="modal-body">
+        <input type="hidden" name="targetRoom" />
+        <input type="hidden" name="targetRecord" />
+        <label>留言內容<textarea name="message" rows="3" required></textarea></label>
+        <div class="modal-actions">
+          <button type="submit" class="primary block">送出</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="modalConfirm" class="modal hidden">
+      <div class="modal-header">
+        <h3 id="confirmTitle">確認動作</h3>
+        <button class="icon" data-close>✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">確定要進行此動作嗎？</p>
+        <div class="modal-actions">
+          <button class="danger block" id="confirmButton">確認</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
