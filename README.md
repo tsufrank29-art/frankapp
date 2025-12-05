@@ -69,58 +69,98 @@
 
 ```mermaid
 flowchart TD
-  %% ---------- Client ----------
-  subgraph Client ["Client (前端 Web / PWA)"]
-    UI["功能頁面<br>(Screen 01~05)"]
-    StateCache["前端狀態儲存<br>(記憶體 / 快取)"]
-    ToastModal["Toast & Modal"]
-  end
+    subgraph Client[前端 Web / PWA]
+        UI[功能頁面\n(Screen 01~05)]
+        State[前端狀態儲存\n(記憶體/快取)]
+        Toast[Toast & Modal]
+    end
 
-  %% ---------- API Layer ----------
-  subgraph APILayer ["API 層"]
-    RoomAPI["Room API<br>(房間列表 / 創建 / 加入 / 退出 / 刪除)"]
-    OpAPI["Operation API<br>(操作 CRUD / 留言)"]
-    ProfileAPI["Profile API<br>(個人主頁 / 暱稱頭像)"]
-  end
+    subgraph API[後端 API 層]
+        RoomAPI[Room API\n(房間列表/創建/加入/退出/刪除)]
+        OpAPI[Operation API\n(新增/編輯/刪除操作、留言)]
+        ProfileAPI[Profile API\n(個人主頁、暱稱/頭像更新)]
+    end
 
-  %% ---------- Database ----------
-  subgraph Database ["資料庫"]
-    UsersTable[(users)]
-    RoomsTable[(rooms)]
-    MembersTable[(room_members)]
-    OpsTable[(operations)]
-    CommentsTable[(operation_comments)]
-  end
+    subgraph DB[資料庫]
+        Users[(users)]
+        Rooms[(rooms)]
+        Members[(room_members)]
+        Ops[(operations)]
+        OpCmt[(operation_comments)]
+    end
 
-  %% ---------- Flows ----------
-  UI -- 切換分頁 / 點擊按鈕 --> ToastModal
-  UI -- 觸發動作 --> StateCache
-  UI -- REST 請求 --> RoomAPI
-  UI -- REST 請求 --> OpAPI
-  UI -- REST 請求 --> ProfileAPI
+    UI -- 切換分頁/點擊按鈕 --> Toast
+    UI -- 觸發動作 --> State
+    UI -- REST 請求 --> RoomAPI
+    UI -- REST 請求 --> OpAPI
+    UI -- REST 請求 --> ProfileAPI
 
-  RoomAPI -- 新增 / 更新 / 查詢 --> RoomsTable
-  RoomAPI -- 維護成員數 / 關聯 --> MembersTable
-  RoomAPI -- 房主與成員對應 --> UsersTable
+    RoomAPI -- 新增/更新/查詢 --> Rooms
+    RoomAPI -- 維護成員數/關聯 --> Members
+    RoomAPI -- 房主與成員對應 --> Users
 
-  OpAPI -- 寫入 / 更新 --> OpsTable
-  OpAPI -- 留言 CRUD --> CommentsTable
-  OpAPI -- 操作與留言作者 --> UsersTable
-  OpAPI -- 操作隸屬房間 --> RoomsTable
+    OpAPI -- 寫入/更新 --> Ops
+    OpAPI -- 留言 CRUD --> OpCmt
+    OpAPI -- 操作與留言作者 --> Users
+    OpAPI -- 操作隸屬房間 --> Rooms
 
-  ProfileAPI -- 讀寫暱稱 / 頭像 --> UsersTable
-  ProfileAPI -- 我的房間 / 加入房間清單 --> MembersTable
+    ProfileAPI -- 讀寫暱稱/頭像 --> Users
+    ProfileAPI -- 我的房間/加入房間清單 --> Members
 
-  ToastModal -- 成功 / 錯誤提示 --> UI
-  StateCache -- 同步列表 / 卡片狀態 --> UI
+    Toast -- 成功/錯誤提示 --> UI
+    State -- 同步列表/卡片狀態 --> UI
 
-  %% ---------- Styles ----------
-  classDef note fill:#223,stroke:#4fc3f7,color:#fff,stroke-width:1px;
-  class ToastModal note;
+    classDef note fill:#223,stroke:#4fc3f7,color:#fff,stroke-width:1px;
+    class Toast note;
 ```
-  
+
 ### 註解
 - **前端 Web/PWA**：對應目前的多頁籤 UI；所有操作都會先更新前端狀態，並顯示 toast/modal 互動。
 - **API 層**：以 REST 端點包裝房間、操作紀錄、留言與個人資訊的讀寫，處理商業邏輯（如成員數維護、權限）。
 - **資料庫**：使用 `users`、`rooms`、`room_members`、`operations`、`operation_comments` 等表格對應前述資料庫設計。
 - **資料流**：例如在房間總覽點擊「加入房間」，前端發送 `POST /rooms/{id}/join`，API 寫入 `room_members` 並更新 `rooms.member_count`，回傳成功後前端同步狀態並顯示 toast，同時導向房間訪客頁。
+
+## User Journey（端到端行為路徑）
+以下描述一位使用者第一次開啟頁面到完整體驗所有核心功能的旅程：
+1. **進入首頁（房間總覽 Screen 01）**：瀏覽公開房間卡片、使用排序快速找到熱門房間。
+2. **加入房間**：點擊卡片右下角「加入房間」，立即看到 toast 成功提示並自動導向該房間的訪客頁（Screen 04）。
+3. **查看房主操作記錄**：在訪客頁瀏覽最新三筆股票操作與描述，若無資料顯示「尚未新增操作記錄」。
+4. **留言互動**：對任何操作卡片點擊「我要留言」，在彈窗輸入評論並送出，留言會顯示在卡片下方。
+5. **退出房間**：使用左下角「退出房間」按鈕返回「我加入的房間」列表（Screen 03），確認清單已更新。
+6. **創建屬於自己的房間**：回到 Header 的「創建房間」按鈕，填寫名稱、操作週期與介紹，成功 toast 後跳轉到「我創建的房間」（Screen 02）。
+7. **管理操作記錄**：在「我創建的房間」新增/編輯/刪除操作、留下說明與留言，並可在需要時使用「移除房間」清空整體資料。
+8. **檢視個人資訊**：點擊 Header 頭像前往個人主頁（Screen 05），查看暱稱、創建與加入的房間列表，驗證資料同步無誤。
+
+## 功能 User Story（以核心角色：一般使用者）
+- **瀏覽房間**：身為使用者，我想在房間總覽看到熱門與最新房間，方便挑選我要加入的討論區。接受條件：卡片顯示名稱、房主暱稱、人數、操作週期與前三筆標的；可依人數排序。
+- **加入房間並立即查看內容**：身為使用者，我想在點擊「加入房間」後立即進入該房間頁，並收到成功提示，同時人數自動更新並記錄在「我加入的房間」。
+- **查看與留言操作紀錄**：身為房間成員，我想在訪客頁閱讀房主的每筆操作並留言回饋，以便討論投資決策。接受條件：操作卡片含代號、名稱、張數、日期、操作類型、說明；留言送出後顯示在卡片下方。
+- **退出房間**：身為房間成員，我可以透過左下角按鈕退出房間並返回加入列表，清單需同步移除該房間且人數扣回。
+- **創建與管理房間**：身為房主，我想創建房間並管理操作紀錄（新增、編輯、刪除）及留言，讓成員能即時看到我的操作脈絡。接受條件：創建必填名稱與操作週期；操作卡片可重複編輯；移除房間會清空相關資料並回到空狀態頁。
+- **新增操作留言**：身為房主或成員，我想對每筆操作留下留言，以便紀錄討論重點，送出後留言需即時顯示於對應卡片。
+- **查看個人主頁**：身為使用者，我想快速看到自己的暱稱、創建的房間與加入的房間，缺少資料時顯示「無」，以確認當前身份與關聯房間。
+
+## FlowChart（主要互動流程）
+以下流程圖聚焦於「加入房間 → 瀏覽/留言 → 創建房間」的主要動線：
+
+```mermaid
+flowchart LR
+    A[房間總覽 Screen 01] -->|加入房間| B[顯示 Toast<br/>導向房間頁 Screen 04]
+    B --> C{房主有操作紀錄?}
+    C -->|是| D[顯示操作卡片<br/>可留言]
+    C -->|否| E[顯示「尚未新增操作記錄」]
+    D --> F[我要留言彈窗<br/>送出留言]
+    E --> F
+    F --> B
+    B --> G[退出房間<br/>返回 Screen 03]
+    A --> H[Header 創建房間按鈕]
+    H --> I[創建房間彈窗<br/>必填名稱/週期]
+    I -->|成功| J[Toast + 跳轉 Screen 02]
+    J --> K[新增/編輯/刪除操作]
+    K --> L[留言互動]
+    J --> M[移除房間<br/>回到空狀態]
+    A --> N[Header 頭像→個人主頁 Screen 05]
+
+    classDef toast fill:#2dd4bf,stroke:#0f766e,color:#0b1721,stroke-width:1px;
+    B:::toast
+```
