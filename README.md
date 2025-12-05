@@ -69,51 +69,56 @@
 
 ```mermaid
 flowchart TD
-    subgraph Client[前端 Web / PWA]
-        UI[功能頁面\n(Screen 01~05)]
-        State[前端狀態儲存\n(記憶體/快取)]
-        Toast[Toast & Modal]
-    end
+  %% ---------- Client ----------
+  subgraph Client ["Client (前端 Web / PWA)"]
+    UI["功能頁面<br>(Screen 01~05)"]
+    StateCache["前端狀態儲存<br>(記憶體 / 快取)"]
+    ToastModal["Toast & Modal"]
+  end
 
-    subgraph API[後端 API 層]
-        RoomAPI[Room API\n(房間列表/創建/加入/退出/刪除)]
-        OpAPI[Operation API\n(新增/編輯/刪除操作、留言)]
-        ProfileAPI[Profile API\n(個人主頁、暱稱/頭像更新)]
-    end
+  %% ---------- API Layer ----------
+  subgraph APILayer ["API 層"]
+    RoomAPI["Room API<br>(房間列表 / 創建 / 加入 / 退出 / 刪除)"]
+    OpAPI["Operation API<br>(操作 CRUD / 留言)"]
+    ProfileAPI["Profile API<br>(個人主頁 / 暱稱頭像)"]
+  end
 
-    subgraph DB[資料庫]
-        Users[(users)]
-        Rooms[(rooms)]
-        Members[(room_members)]
-        Ops[(operations)]
-        OpCmt[(operation_comments)]
-    end
+  %% ---------- Database ----------
+  subgraph Database ["資料庫"]
+    UsersTable[(users)]
+    RoomsTable[(rooms)]
+    MembersTable[(room_members)]
+    OpsTable[(operations)]
+    CommentsTable[(operation_comments)]
+  end
 
-    UI -- 切換分頁/點擊按鈕 --> Toast
-    UI -- 觸發動作 --> State
-    UI -- REST 請求 --> RoomAPI
-    UI -- REST 請求 --> OpAPI
-    UI -- REST 請求 --> ProfileAPI
+  %% ---------- Flows ----------
+  UI -- 切換分頁 / 點擊按鈕 --> ToastModal
+  UI -- 觸發動作 --> StateCache
+  UI -- REST 請求 --> RoomAPI
+  UI -- REST 請求 --> OpAPI
+  UI -- REST 請求 --> ProfileAPI
 
-    RoomAPI -- 新增/更新/查詢 --> Rooms
-    RoomAPI -- 維護成員數/關聯 --> Members
-    RoomAPI -- 房主與成員對應 --> Users
+  RoomAPI -- 新增 / 更新 / 查詢 --> RoomsTable
+  RoomAPI -- 維護成員數 / 關聯 --> MembersTable
+  RoomAPI -- 房主與成員對應 --> UsersTable
 
-    OpAPI -- 寫入/更新 --> Ops
-    OpAPI -- 留言 CRUD --> OpCmt
-    OpAPI -- 操作與留言作者 --> Users
-    OpAPI -- 操作隸屬房間 --> Rooms
+  OpAPI -- 寫入 / 更新 --> OpsTable
+  OpAPI -- 留言 CRUD --> CommentsTable
+  OpAPI -- 操作與留言作者 --> UsersTable
+  OpAPI -- 操作隸屬房間 --> RoomsTable
 
-    ProfileAPI -- 讀寫暱稱/頭像 --> Users
-    ProfileAPI -- 我的房間/加入房間清單 --> Members
+  ProfileAPI -- 讀寫暱稱 / 頭像 --> UsersTable
+  ProfileAPI -- 我的房間 / 加入房間清單 --> MembersTable
 
-    Toast -- 成功/錯誤提示 --> UI
-    State -- 同步列表/卡片狀態 --> UI
+  ToastModal -- 成功 / 錯誤提示 --> UI
+  StateCache -- 同步列表 / 卡片狀態 --> UI
 
-    classDef note fill:#223,stroke:#4fc3f7,color:#fff,stroke-width:1px;
-    class Toast note;
+  %% ---------- Styles ----------
+  classDef note fill:#223,stroke:#4fc3f7,color:#fff,stroke-width:1px;
+  class ToastModal note;
 ```
-
+  
 ### 註解
 - **前端 Web/PWA**：對應目前的多頁籤 UI；所有操作都會先更新前端狀態，並顯示 toast/modal 互動。
 - **API 層**：以 REST 端點包裝房間、操作紀錄、留言與個人資訊的讀寫，處理商業邏輯（如成員數維護、權限）。
