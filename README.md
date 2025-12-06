@@ -2,7 +2,7 @@
 
 這是一個純前端的功能頁原型，模擬「股神俱樂部」APP 的主要體驗，包括房間總覽、我創建的房間、我加入的房間、訪客房間頁，以及個人主頁。所有資料都保存在瀏覽器記憶體中，方便快速展示流程。
 
-## 使用方式（前端原型）
+## 使用方式
 1. 將專案下載後，以瀏覽器直接開啟 `index.html`。
 2. 透過底部分頁或 Header 進行導覽，體驗各項功能：
    - 在房間總覽加入房間並觸發「加入成功」的 toast。
@@ -15,49 +15,6 @@
 - `index.html`：頁面骨架與彈窗結構。
 - `styles.css`：深色系介面與卡片、按鈕、彈窗的樣式設定。
 - `app.js`：前端互動邏輯、資料管理、導覽與 toast/彈窗控制。
-
-## Backend（SQLite 版極簡實作）
-> 針對「主機條件有限」的需求，提供一個依賴極少、容易在 CI/CD 或低規環境啟動的 Node.js + SQLite 後端原型。
-
-### 架構與檔案
-- `backend/server.js`：Express 應用主程式，負責啟動服務、套用路由、錯誤處理。
-- `backend/package.json`：定義最小相依（`express`、`sqlite3`）、執行指令與 Node 版本需求。
-- `backend/data.sqlite`：啟動後自動建立的資料檔案，不需要額外安裝資料庫伺服器。
-
-### 資料表（SQLite）
-啟動時會自動建立以下表格，欄位對應前端功能：
-- `users`：使用者主檔（預設自動建立 1 位 demo 用戶）。
-- `rooms`：房間主檔，包含 `cycle`、`intro`、`member_count` 等欄位。
-- `room_members`：房間成員關聯，維護角色與成員數。
-- `operations`：操作記錄（股票代碼、名稱、張數、操作類型、日期、說明）。
-- `operation_comments`：操作留言，關聯操作與留言作者。
-
-### 路由摘要
-- `GET /health`：健康檢查。
-- `GET /rooms`：房間列表，可用 `excludeOwned=1` 過濾自有房間、`sort=member_desc` 依人數排序。
-- `POST /rooms`：創建房間並把呼叫者加入為房主。
-- `GET /rooms/owned`、`GET /rooms/joined`：分別取得自己創建與加入的房間。
-- `POST /rooms/:id/join` / `POST /rooms/:id/leave` / `DELETE /rooms/:id`：加入、退出、移除房間（移除僅限房主）。
-- `GET /rooms/:id`：房間詳情，包含操作與留言串。
-- `POST /rooms/:id/operations`、`PATCH /operations/:id`、`DELETE /operations/:id`：操作記錄 CRUD。
-- `POST /operations/:id/comments`：針對操作卡片留言。
-
-### 使用方式（後端）
-1. 安裝 Node.js（建議 LTS 18+）與 npm。低規環境僅需能執行 Node，不需額外 DB 服務。
-2. 在專案根目錄執行：
-   ```bash
-   cd backend
-   npm install
-   npm start  # 預設 http://localhost:4000
-   ```
-3. 請求時可透過 `x-user-id` header 指定使用者 ID（預設 1）；第一次啟動會自動建立 demo 用戶與兩個示範房間。
-4. SQLite 資料檔預設位於 `backend/data.sqlite`，若需要重新初始化可刪除該檔後重新啟動。
-
-### 環境限制與 CI/CD 提示
-- **極少相依**：僅 `express` 與 `sqlite3` 兩個套件；無需安裝系統級 SQLite 伺服器或其他服務。
-- **資源友善**：SQLite 檔案型資料庫適合低 RAM / CPU 主機；如需併發更高的部署可替換為 Postgres，路由格式相容。
-- **預設授權簡化**：未實作完整驗證，使用 `x-user-id` 模擬登入；正式環境需接入 JWT/Session 與權限檢查。
-- **遷移策略**：若未來改用雲端 DB，請在 CI/CD 先執行資料庫遷移，並以環境變數提供連線字串；目前版本不依賴外部服務即可通過基本健康檢查。
 
 ## 資料庫設計（實際上可由後端實作）
 以下為對應目前功能頁的關聯式資料表，型別以常見的 PostgreSQL 風格描述，可依實際後端調整：
