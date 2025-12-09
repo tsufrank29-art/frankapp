@@ -29,7 +29,7 @@
 - `users`：使用者主檔（預設自動建立 1 位 demo 用戶）。
 - `rooms`：房間主檔，包含 `cycle`、`intro`、`member_count` 等欄位。
 - `room_members`：房間成員關聯，維護角色與成員數。
-- `operations`：操作記錄（股票代碼、名稱、張數、操作類型、日期、說明）。
+- `operations`：操作計畫（股票代碼、名稱、日期、倉位配置%、進場條件、進場價格區間、加碼/止損/停利條件、目標價、備註）。
 - `operation_comments`：操作留言，關聯操作與留言作者。
 
 ### 路由摘要
@@ -68,7 +68,7 @@
 | `users` | 儲存使用者資訊與暱稱 | `id (PK, uuid)`, `email (unique)`, `password_hash`, `nickname`, `avatar_url`, `created_at`, `updated_at` |
 | `rooms` | 房間主檔 | `id (PK, uuid)`, `name (varchar)`, `cycle (enum: short, mid, long, value)`, `intro (text)`, `owner_id (FK -> users.id)`, `member_count (int, default 1)`, `created_at`, `updated_at` |
 | `room_members` | 房間成員（包含房主） | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `user_id (FK -> users.id)`, `role (enum: owner, member)`, `joined_at` |
-| `operations` | 操作記錄 | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `actor_id (FK -> users.id)`, `stock_code (varchar)`, `stock_name (varchar)`, `shares (int)`, `action (enum: buy, add, trim, sell)`, `note (text)`, `happened_on (date)`, `created_at`, `updated_at` |
+| `operations` | 操作計畫 | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `actor_id (FK -> users.id)`, `stock_code (varchar)`, `stock_name (varchar)`, `plan_date (date)`, `position_pct (numeric)`, `entry_condition (text)`, `entry_range_min (numeric)`, `entry_range_max (numeric)`, `add_condition (text)`, `stop_loss_condition (text)`, `take_profit_condition (text)`, `target_price (numeric)`, `note (text)`, `created_at`, `updated_at` |
 | `operation_comments` | 對操作卡片留言 | `id (PK, uuid)`, `operation_id (FK -> operations.id)`, `user_id (FK -> users.id)`, `content (text)`, `created_at` |
 | `room_comments` | 對房間層級留言（若未來需要） | `id (PK, uuid)`, `room_id (FK -> rooms.id)`, `user_id (FK -> users.id)`, `content (text)`, `created_at` |
 
@@ -93,10 +93,10 @@
 - `POST /rooms/{roomId}/join`：加入房間，建立 `room_members` 紀錄並更新 `rooms.member_count`。
 - `POST /rooms/{roomId}/leave`：退出房間，移除成員並更新人數。
 
-### 操作記錄（房主限定）
-- `POST /rooms/{roomId}/operations`：新增操作記錄，body：`{stock_code, stock_name, shares, action, note, happened_on}`。
-- `PATCH /operations/{opId}`：編輯操作記錄。
-- `DELETE /operations/{opId}`：刪除操作記錄。
+### 操作計畫（房主限定）
+- `POST /rooms/{roomId}/operations`：新增操作計畫，body：`{stock_code, stock_name, plan_date, position_pct, entry_condition, entry_range_min, entry_range_max, add_condition, stop_loss_condition, take_profit_condition, target_price, note}`。
+- `PATCH /operations/{opId}`：編輯操作計畫（欄位同上）。
+- `DELETE /operations/{opId}`：刪除操作計畫。
 
 ### 留言（房主與訪客皆可）
 - `POST /operations/{opId}/comments`：在操作卡片留言，body：`{content}`。
