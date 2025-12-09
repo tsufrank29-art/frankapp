@@ -44,7 +44,7 @@
             <p class="eyebrow">我的房間</p>
             <h2>我創建的房間</h2>
           </div>
-          <button class="primary" id="addRecordButton">新增操作記錄</button>
+          <button class="primary" id="addRecordButton">新增操作計畫</button>
         </div>
         <div id="createdContent" class="stack"></div>
         <div class="bottom-action" id="removeRoomWrapper">
@@ -122,24 +122,34 @@
 
     <div id="modalRecord" class="modal hidden">
       <div class="modal-header">
-        <h3 id="recordModalTitle">新增操作記錄</h3>
+        <h3 id="recordModalTitle">新增操作計畫</h3>
         <button class="icon" data-close>✕</button>
       </div>
-      <form id="recordForm" class="modal-body">
+      <form id="recordForm" class="modal-body plan-form">
         <input type="hidden" name="recordId" />
-        <label>股票代號（純數字）<input name="code" pattern="\d+" required /></label>
-        <label>股票名稱（文字）<input name="name" required /></label>
-        <label>股票張數（純數字）<input name="shares" pattern="\d+" required /></label>
-        <label>日期<input type="date" name="date" required /></label>
-        <label>操作
-          <select name="action" required>
-            <option value="買進">買進</option>
-            <option value="加碼">加碼</option>
-            <option value="減碼">減碼</option>
-            <option value="賣出">賣出</option>
-          </select>
-        </label>
-        <label>操作說明<textarea name="notes" rows="2"></textarea></label>
+        <div class="plan-form__row">
+          <label>股票代號（純數字）<input name="code" pattern="\d+" required /></label>
+          <label>股票名稱（文字）<input name="name" required /></label>
+          <label>日期<input type="date" name="date" required /></label>
+        </div>
+        <div class="plan-form__row">
+          <label>倉位配置（％）<input type="number" name="position" min="0" max="100" step="1" required /></label>
+          <label>目標價（純數字）<input type="number" name="targetPrice" min="0" step="1" required /></label>
+        </div>
+        <label>進場條件<input name="entryCondition" placeholder="例：月線守穩、量縮" /></label>
+        <div class="plan-form__row plan-form__range">
+          <label>進場價格區間
+            <div class="range-inputs">
+              <input name="entryMin" pattern="\d+" placeholder="最低" required />
+              <span class="tilde">～</span>
+              <input name="entryMax" pattern="\d+" placeholder="最高" required />
+            </div>
+          </label>
+        </div>
+        <label>加碼條件<input name="addCondition" placeholder="例：突破前高" /></label>
+        <label>止損條件<input name="stopLossCondition" placeholder="例：跌破季線" /></label>
+        <label>停利條件<input name="takeProfitCondition" placeholder="例：觸及箱頂" /></label>
+        <label>備註說明<textarea name="notes" rows="2" placeholder="可輸入文字＆數字"></textarea></label>
         <div class="modal-actions">
           <button type="submit" class="primary block">送出</button>
         </div>

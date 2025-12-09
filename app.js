@@ -13,19 +13,29 @@ let rooms = [
         id: "r1-1",
         code: "2412",
         name: "中華電",
-        shares: 10,
         date: "2024-06-15",
-        action: "買進",
-        notes: "守季線布局",
+        position: 20,
+        entryCondition: "守季線、盤整突破",
+        entryRange: { min: "115", max: "122" },
+        addCondition: "突破月線加碼",
+        stopLossCondition: "跌破季線",
+        takeProfitCondition: "填息後收斂",
+        targetPrice: 130,
+        notes: "觀察大盤量能",
         comments: ["期待填息"]
       },
       {
         id: "r1-2",
         code: "2330",
         name: "台積電",
-        shares: 5,
         date: "2024-06-10",
-        action: "加碼",
+        position: 30,
+        entryCondition: "靠近5日線分批",
+        entryRange: { min: "855", max: "880" },
+        addCondition: "突破900再加碼",
+        stopLossCondition: "跌破850",
+        takeProfitCondition: "950分批出",
+        targetPrice: 980,
         notes: "AI需求續強",
         comments: []
       },
@@ -33,9 +43,14 @@ let rooms = [
         id: "r1-3",
         code: "2317",
         name: "鴻海",
-        shares: 20,
         date: "2024-06-05",
-        action: "買進",
+        position: 15,
+        entryCondition: "月線守穩",
+        entryRange: { min: "125", max: "134" },
+        addCondition: "站上半年線",
+        stopLossCondition: "跌破120",
+        takeProfitCondition: "145減碼",
+        targetPrice: 150,
         notes: "NB回溫",
         comments: []
       }
@@ -53,9 +68,14 @@ let rooms = [
         id: "r2-1",
         code: "2884",
         name: "玉山金",
-        shares: 30,
         date: "2024-06-12",
-        action: "加碼",
+        position: 25,
+        entryCondition: "殖利率 > 5%",
+        entryRange: { min: "27", max: "29" },
+        addCondition: "季線守穩加碼",
+        stopLossCondition: "跌破25.5",
+        takeProfitCondition: "32分批",
+        targetPrice: 33,
         notes: "殖利率保護",
         comments: []
       },
@@ -63,18 +83,64 @@ let rooms = [
         id: "r2-2",
         code: "1303",
         name: "南亞",
-        shares: 12,
         date: "2024-05-29",
-        action: "買進",
-        notes: "塑化循環回升",
+        position: 18,
+        entryCondition: "塑化循環回升",
+        entryRange: { min: "72", max: "78" },
+        addCondition: "站穩80後加碼",
+        stopLossCondition: "跌破70",
+        takeProfitCondition: "88停利",
+        targetPrice: 90,
+        notes: "景氣循環股",
         comments: []
       }
     ]
   }
 ];
 
-let createdRoom = null;
-let joinedRoomIds = new Set();
+let createdRoom = {
+  id: "c-demo",
+  name: "我的操盤計畫室",
+  intro: "示範操作計畫排版",
+  cycle: "中期波段",
+  creator: user.nickname,
+  memberCount: 12,
+  operations: [
+    {
+      id: "c1-1",
+      code: "0050",
+      name: "台灣50",
+      date: "2024-06-18",
+      position: 20,
+      entryCondition: "月線附近分批",
+      entryRange: { min: "143", max: "148" },
+      addCondition: "突破150加碼10%",
+      stopLossCondition: "跌破140全出",
+      takeProfitCondition: "156開始分批",
+      targetPrice: 160,
+      notes: "長期核心部位",
+      comments: ["觀察量能"]
+    },
+    {
+      id: "c1-2",
+      code: "2603",
+      name: "長榮",
+      date: "2024-06-14",
+      position: 15,
+      entryCondition: "BDI續強",
+      entryRange: { min: "126", max: "132" },
+      addCondition: "突破季線續加",
+      stopLossCondition: "跌破120",
+      takeProfitCondition: "145以上分批",
+      targetPrice: 150,
+      notes: "運價回升行情",
+      comments: []
+    }
+  ]
+};
+
+rooms.push(createdRoom);
+let joinedRoomIds = new Set(["r1"]);
 let visitorRoomId = null;
 
 const screens = {
@@ -182,9 +248,17 @@ recordForm.addEventListener("submit", (e) => {
     id: formData.get("recordId") || `op-${Date.now()}`,
     code: formData.get("code"),
     name: formData.get("name"),
-    shares: Number(formData.get("shares")),
     date: formData.get("date"),
-    action: formData.get("action"),
+    position: Number(formData.get("position") || 0),
+    entryCondition: formData.get("entryCondition") || "",
+    entryRange: {
+      min: formData.get("entryMin") || "",
+      max: formData.get("entryMax") || ""
+    },
+    addCondition: formData.get("addCondition") || "",
+    stopLossCondition: formData.get("stopLossCondition") || "",
+    takeProfitCondition: formData.get("takeProfitCondition") || "",
+    targetPrice: Number(formData.get("targetPrice") || 0),
     notes: formData.get("notes") || "",
     comments: []
   };
@@ -194,7 +268,7 @@ recordForm.addEventListener("submit", (e) => {
   } else {
     createdRoom.operations.unshift(payload);
   }
-  showToast("操作記錄已更新");
+  showToast("操作計畫已更新");
   closeModal();
   renderCreated();
   updateProfile();
@@ -238,7 +312,7 @@ document.getElementById("addRecordButton").addEventListener("click", () => {
   recordForm.reset();
   recordForm.elements.date.value = today();
   recordForm.elements.recordId.value = "";
-  document.getElementById("recordModalTitle").textContent = "新增操作記錄";
+  document.getElementById("recordModalTitle").textContent = "新增操作計畫";
   openModal(modals.record);
 });
 
@@ -333,7 +407,7 @@ function renderCreated() {
   wrapper.appendChild(headerCard);
 
   if (!createdRoom.operations.length) {
-    wrapper.insertAdjacentHTML("beforeend", `<div class="empty">尚未新增操作記錄</div>`);
+    wrapper.insertAdjacentHTML("beforeend", `<div class="empty">尚未新增操作計畫</div>`);
   } else {
     createdRoom.operations
       .slice()
@@ -347,13 +421,13 @@ function renderVisitor() {
   const container = document.getElementById("visitorContent");
   container.innerHTML = "";
   if (!room) {
-    container.innerHTML = `<div class="empty">尚未新增操作記錄</div>`;
+    container.innerHTML = `<div class="empty">尚未新增操作計畫</div>`;
     return;
   }
   document.getElementById("visitorTitle").textContent = room.name;
   document.getElementById("visitorMeta").textContent = `房間人數 ${room.memberCount}`;
   if (!room.operations.length) {
-    container.innerHTML = `<div class="empty">尚未新增操作記錄</div>`;
+    container.innerHTML = `<div class="empty">尚未新增操作計畫</div>`;
     return;
   }
   room.operations
@@ -449,14 +523,21 @@ function createOperationCard(roomId, op, editable) {
   card.innerHTML = `
     <div class="card-body">
       <div class="room-topline">
-        <h3>${op.code} ${op.name}</h3>
-        <span class="badge">${op.action}</span>
+        <h3>${op.name}（${op.code}）</h3>
+        <span class="badge">${op.date}</span>
       </div>
-      <div class="inline-meta">
-        <span class="pill">📅 ${op.date}</span>
-        <span class="pill">📦 ${op.shares} 張</span>
+      <div class="plan-grid">
+        <div class="plan-item"><span class="label">倉位配置</span><span class="value">${op.position || 0}%</span></div>
+        <div class="plan-item"><span class="label">進場價格區間</span><span class="value">${op.entryRange?.min || "－"} ～ ${op.entryRange?.max || "－"}</span></div>
+        <div class="plan-item"><span class="label">目標價</span><span class="value">${op.targetPrice || "－"}</span></div>
       </div>
-      <div class="stat-row"><strong>操作說明</strong><span>${op.notes || "－"}</span></div>
+      <div class="plan-conditions">
+        <div><strong>進場條件：</strong>${op.entryCondition || "－"}</div>
+        <div><strong>加碼條件：</strong>${op.addCondition || "－"}</div>
+        <div><strong>止損條件：</strong>${op.stopLossCondition || "－"}</div>
+        <div><strong>停利條件：</strong>${op.takeProfitCondition || "－"}</div>
+        <div><strong>備註說明：</strong>${op.notes || "－"}</div>
+      </div>
     </div>
   `;
 
@@ -473,7 +554,7 @@ function createOperationCard(roomId, op, editable) {
     deleteBtn.textContent = "刪除";
     deleteBtn.className = "danger";
     deleteBtn.addEventListener("click", () => {
-      setupConfirm("確認刪除", "確認刪除該操作記錄？", () => {
+      setupConfirm("確認刪除", "確認刪除該操作計畫？", () => {
         createdRoom.operations = createdRoom.operations.filter((item) => item.id !== op.id);
         showToast("已刪除");
         renderCreated();
@@ -521,11 +602,17 @@ function openRecordForEdit(op) {
   recordForm.elements.recordId.value = op.id;
   recordForm.elements.code.value = op.code;
   recordForm.elements.name.value = op.name;
-  recordForm.elements.shares.value = op.shares;
   recordForm.elements.date.value = op.date;
-  recordForm.elements.action.value = op.action;
+  recordForm.elements.position.value = op.position;
+  recordForm.elements.entryCondition.value = op.entryCondition;
+  recordForm.elements.entryMin.value = op.entryRange?.min || "";
+  recordForm.elements.entryMax.value = op.entryRange?.max || "";
+  recordForm.elements.addCondition.value = op.addCondition;
+  recordForm.elements.stopLossCondition.value = op.stopLossCondition;
+  recordForm.elements.takeProfitCondition.value = op.takeProfitCondition;
+  recordForm.elements.targetPrice.value = op.targetPrice;
   recordForm.elements.notes.value = op.notes;
-  document.getElementById("recordModalTitle").textContent = "編輯操作記錄";
+  document.getElementById("recordModalTitle").textContent = "編輯操作計畫";
   openModal(modals.record);
 }
 
