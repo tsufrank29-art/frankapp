@@ -12,11 +12,11 @@
    - 於個人主頁檢視暱稱、創建與加入的房間清單。
 
 ## 前端佈局問題與解法（滑動時的固定 Header / 底部選單）
-- **問題 1：頂部 Header 固定時覆蓋內容，卡片最上方資訊被遮住。**  
-  **解法：** 在 `styles.css` 導入 `--topbar-height` 與 `--shell-width`，將 Header 轉為固定定位並設定等寬，並為 `.app-shell` 與 `.page-layout__content` 增加對應的上方內距與 `scroll-padding-top`，確保內容區域預留高度、不被覆蓋。
-- **問題 2：底部選單未固定，滾動時消失。**  
-  **解法：** 以 `--tabbar-height` 驗證固定高度，將 `.tab-bar` 固定在頁面底部並調整寬度計算，同步提升 `.app-shell` 下方內距與浮動按鈕（FAB）的位置，避免遮蓋內容並符合安全區域。  
-> 以上修正均為純樣式調整，前後端邏輯未變動，滑動時 Header 與底部導覽皆維持在視窗內。
+- **問題 1：頂部 Header 固定時覆蓋內容，卡片最上方資訊被遮住，且無法滑到真正頂端。**  
+  **解法：** 在 `styles.css` 設定 `--topbar-height`，將 `.app-shell` 上方內距調整為 `calc(var(--topbar-height) + 16px)` 並同步提升 `.page-layout__content` 的 `padding-top` 與 `scroll-padding-top`，確保可捲動到內容起點且不被 Header 壓住。
+- **問題 2：底部選單未固定，滾動時消失或遮蓋內容。**  
+  **解法：** 透過 `--tabbar-height` 固定 `.tab-bar` 在視窗底部，並為外層 `.app-shell` 與 `.page-layout__content` 增加對應的下方內距，同時微調 FAB 的底部間距，使內容可完整捲動又不被底部選單覆蓋。  
+> 以上修正均為純樣式調整，前後端邏輯未變動，滑動時 Header 與底部導覽皆維持在視窗內且不會跑版。
 
 ## 檔案說明
 - `index.html`：頁面骨架與彈窗結構。
