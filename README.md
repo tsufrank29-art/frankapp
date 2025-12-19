@@ -13,7 +13,7 @@
 
 ## 前端佈局問題與解法（滑動時的固定 Header / 底部選單）
 - **問題 1：頂部 Header 固定時覆蓋內容，卡片最上方資訊被遮住，且無法滑到真正頂端。**  
-  **解法：** 在 `styles.css` 設定 `--topbar-height`，將 `.app-shell` 上方內距調整為 `calc(var(--topbar-height) + 16px)` 並同步提升 `.page-layout__content` 的 `padding-top` 與 `scroll-padding-top`，確保可捲動到內容起點且不被 Header 壓住。
+  **解法：** 在 `styles.css` 設定 `--topbar-height`，並精簡 `.app-shell` 上方內距為 `calc(var(--topbar-height) + 8px)`，同步收斂 `.page-layout__content` 的 `padding-top` 與 `scroll-padding-top`，確保能滑到內容起點、不被 Header 壓住且不留過多空白。
 - **問題 2：底部選單未固定，滾動時消失或遮蓋內容。**  
   **解法：** 透過 `--tabbar-height` 固定 `.tab-bar` 在視窗底部，並為外層 `.app-shell` 與 `.page-layout__content` 增加對應的下方內距，同時微調 FAB 的底部間距，使內容可完整捲動又不被底部選單覆蓋。  
 > 以上修正均為純樣式調整，前後端邏輯未變動，滑動時 Header 與底部導覽皆維持在視窗內且不會跑版。
