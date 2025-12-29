@@ -115,60 +115,62 @@
 - `PATCH /me`：更新暱稱或頭像。
 
 ## 系統架構圖（Workflow）
-以下以高層級 workflow 描繪前端操作、API 與資料層的互動，附註解說明主要節點：
+以下以高層級 workflow 描繪前端操作、API 與資料層的互動，並標示關鍵資料流：
 
 ```mermaid
-flowchart TD
+flowchart LR
     subgraph Client[前端 Web / PWA]
-        UI[功能頁面\n(Screen 01~05)]
-        State[前端狀態儲存\n(記憶體/快取)]
-        Toast[Toast & Modal]
+        Nav[Header + Bottom Tab]
+        Screens[Screen 01~05\n房間/操作計畫/個人主頁]
+        UIState[前端狀態\n(記憶體/快取)]
+        Feedback[Toast / Modal]
     end
 
     subgraph API[後端 API 層]
-        RoomAPI[Room API\n(房間列表/創建/加入/退出/刪除)]
-        OpAPI[Operation API\n(新增/編輯/刪除操作、留言)]
-        ProfileAPI[Profile API\n(個人主頁、暱稱/頭像更新)]
+        RoomAPI[Rooms API\n列表/創建/加入/退出/刪除]
+        PlanAPI[Operations API\n操作計畫 CRUD]
+        CommentAPI[Comments API\n操作留言]
+        ProfileAPI[Profile API\n個人資訊]
     end
 
-    subgraph DB[資料庫]
+    subgraph DB[SQLite / RDB]
         Users[(users)]
         Rooms[(rooms)]
         Members[(room_members)]
-        Ops[(operations)]
-        OpCmt[(operation_comments)]
+        Plans[(operations)]
+        PlanComments[(operation_comments)]
     end
 
-    UI -- 切換分頁/點擊按鈕 --> Toast
-    UI -- 觸發動作 --> State
-    UI -- REST 請求 --> RoomAPI
-    UI -- REST 請求 --> OpAPI
-    UI -- REST 請求 --> ProfileAPI
+    Nav --> Screens
+    Screens --> UIState
+    Screens --> Feedback
 
-    RoomAPI -- 新增/更新/查詢 --> Rooms
-    RoomAPI -- 維護成員數/關聯 --> Members
-    RoomAPI -- 房主與成員對應 --> Users
+    Screens -- REST --> RoomAPI
+    Screens -- REST --> PlanAPI
+    Screens -- REST --> CommentAPI
+    Screens -- REST --> ProfileAPI
 
-    OpAPI -- 寫入/更新 --> Ops
-    OpAPI -- 留言 CRUD --> OpCmt
-    OpAPI -- 操作與留言作者 --> Users
-    OpAPI -- 操作隸屬房間 --> Rooms
+    RoomAPI --> Rooms
+    RoomAPI --> Members
+    RoomAPI --> Users
 
-    ProfileAPI -- 讀寫暱稱/頭像 --> Users
-    ProfileAPI -- 我的房間/加入房間清單 --> Members
+    PlanAPI --> Plans
+    PlanAPI --> Rooms
+    PlanAPI --> Users
 
-    Toast -- 成功/錯誤提示 --> UI
-    State -- 同步列表/卡片狀態 --> UI
+    CommentAPI --> PlanComments
+    CommentAPI --> Plans
+    CommentAPI --> Users
 
-    classDef note fill:#223,stroke:#4fc3f7,color:#fff,stroke-width:1px;
-    class Toast note;
+    ProfileAPI --> Users
+    ProfileAPI --> Members
 ```
 
 ### 註解
-- **前端 Web/PWA**：對應目前的多頁籤 UI；所有操作都會先更新前端狀態，並顯示 toast/modal 互動。
-- **API 層**：以 REST 端點包裝房間、操作紀錄、留言與個人資訊的讀寫，處理商業邏輯（如成員數維護、權限）。
-- **資料庫**：使用 `users`、`rooms`、`room_members`、`operations`、`operation_comments` 等表格對應前述資料庫設計。
-- **資料流**：例如在房間總覽點擊「加入房間」，前端發送 `POST /rooms/{id}/join`，API 寫入 `room_members` 並更新 `rooms.member_count`，回傳成功後前端同步狀態並顯示 toast，同時導向房間訪客頁。
+- **前端層**：Header/底部分頁切換 Screen 01~05；所有操作先更新 UIState，再觸發 API。
+- **API 層**：按資源拆分 Rooms / Operations / Comments / Profile，負責資料一致性與權限控制（房主 vs 訪客）。
+- **資料層**：核心表包含 `users`、`rooms`、`room_members`、`operations`、`operation_comments`，支援房間關係、計畫與留言串聯。
+- **資料流範例**：使用者在房間總覽點擊「加入房間」→ `POST /rooms/{id}/join` → 寫入 `room_members` 並更新 `rooms.member_count` → UIState 同步、Toast 顯示並導航至訪客房間頁。
 
 ## User Journey（端到端行為路徑）
 以下描述一位使用者第一次開啟頁面到完整體驗所有核心功能的旅程：
