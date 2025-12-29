@@ -145,7 +145,7 @@ flowchart LR
     Screens --> UIState
     Screens --> Feedback
 
-    Screens -- REST --> RoomAPI
+    Screens -- REST /rooms /rooms/:id --> RoomAPI
     Screens -- REST --> PlanAPI
     Screens -- REST --> CommentAPI
     Screens -- REST --> ProfileAPI
@@ -170,7 +170,9 @@ flowchart LR
 - **前端層**：Header/底部分頁切換 Screen 01~05；所有操作先更新 UIState，再觸發 API。
 - **API 層**：按資源拆分 Rooms / Operations / Comments / Profile，負責資料一致性與權限控制（房主 vs 訪客）。
 - **資料層**：核心表包含 `users`、`rooms`、`room_members`、`operations`、`operation_comments`，支援房間關係、計畫與留言串聯。
-- **資料流範例**：使用者在房間總覽點擊「加入房間」→ `POST /rooms/{id}/join` → 寫入 `room_members` 並更新 `rooms.member_count` → UIState 同步、Toast 顯示並導航至訪客房間頁。
+- **資料流範例**：
+  - 加入房間：房間總覽點擊「加入房間」→ `POST /rooms/{id}/join` → 寫入 `room_members` 並更新 `rooms.member_count` → UIState 同步、Toast 顯示並導航至訪客房間頁。
+  - 進入已加入房間：我加入的房間點擊「進入房間」→ `GET /rooms/{id}` 取得房間詳情與操作計畫 → UIState 更新並導向訪客房間頁。
 
 ## User Journey（端到端行為路徑）
 以下描述一位使用者第一次開啟頁面到完整體驗所有核心功能的旅程：
@@ -225,6 +227,8 @@ flowchart LR
 ```mermaid
 flowchart LR
     A[房間總覽 Screen 01] -->|加入房間| B[顯示 Toast<br/>導向房間頁 Screen 04]
+    A --> O[我加入的房間 Screen 03]
+    O -->|進入房間| B
     B --> C{房主有操作紀錄?}
     C -->|是| D[顯示操作卡片<br/>可留言]
     C -->|否| E[顯示「尚未新增操作記錄」]
