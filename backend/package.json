@@ -1,0 +1,17 @@
+{
+  "name": "frankapp-backend",
+  "version": "0.1.0",
+  "description": "Minimal backend for 股神俱樂部 prototype using SQLite and Express",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}
