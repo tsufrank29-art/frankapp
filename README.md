@@ -119,49 +119,41 @@
 
 ```mermaid
 flowchart TD
-    subgraph Client[前端 Web / PWA]
-        UI[功能頁面\n(Screen 01~05)]
-        State[前端狀態儲存\n(記憶體/快取)]
-        Toast[Toast & Modal]
-    end
+  %% ---------- Client ----------
+  UI["功能頁面<br/>(Screen&nbsp;01~05)"]
 
-    subgraph API[後端 API 層]
-        RoomAPI[Room API\n(房間列表/創建/加入/退出/刪除)]
-        OpAPI[Operation API\n(新增/編輯/刪除操作、留言)]
-        ProfileAPI[Profile API\n(個人主頁、暱稱/頭像更新)]
-    end
+  %% ---------- Front-End ----------
+  FE["前端應用 (Vue / React)"]
 
-    subgraph DB[資料庫]
-        Users[(users)]
-        Rooms[(rooms)]
-        Members[(room_members)]
-        Ops[(operations)]
-        OpCmt[(operation_comments)]
-    end
+  %% ---------- Back-End ----------
+  API["API Gateway<br/>(REST / GraphQL)"]
+  Auth["Auth Service<br/>(JWT)"]
 
-    UI -- 切換分頁/點擊按鈕 --> Toast
-    UI -- 觸發動作 --> State
-    UI -- REST 請求 --> RoomAPI
-    UI -- REST 請求 --> OpAPI
-    UI -- REST 請求 --> ProfileAPI
+  %% ---------- Data Layer ----------
+  DB[(PostgreSQL)]
+  Cache[(Redis)]
 
-    RoomAPI -- 新增/更新/查詢 --> Rooms
-    RoomAPI -- 維護成員數/關聯 --> Members
-    RoomAPI -- 房主與成員對應 --> Users
+  %% ---------- Work-flow ----------
+  UI  -->|使用者操作<br/>Axios / Fetch| FE
+  FE  -->|JSON Request| API
+  API -->|驗證 Token| Auth
+  Auth--> API
+  API -->|CRUD| DB
+  API --> Cache
+  Cache --> API
+  API -->|JSON Response| FE
+  FE  -->|渲染畫面| UI
 
-    OpAPI -- 寫入/更新 --> Ops
-    OpAPI -- 留言 CRUD --> OpCmt
-    OpAPI -- 操作與留言作者 --> Users
-    OpAPI -- 操作隸屬房間 --> Rooms
+  %% ---------- Styling (optional) ----------
+  classDef client fill:#0f3c91,stroke:#3b82f6,color:#fff;
+  classDef fe     fill:#0d9488,stroke:#34d399,color:#fff;
+  classDef be     fill:#7c2d12,stroke:#f97316,color:#fff;
+  classDef data   fill:#374151,stroke:#facc15,color:#fff;
 
-    ProfileAPI -- 讀寫暱稱/頭像 --> Users
-    ProfileAPI -- 我的房間/加入房間清單 --> Members
-
-    Toast -- 成功/錯誤提示 --> UI
-    State -- 同步列表/卡片狀態 --> UI
-
-    classDef note fill:#223,stroke:#4fc3f7,color:#fff,stroke-width:1px;
-    class Toast note;
+  class UI client;
+  class FE fe;
+  class API,Auth be;
+  class DB,Cache data;
 ```
 
 ### 註解
