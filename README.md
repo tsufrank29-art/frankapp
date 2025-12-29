@@ -119,51 +119,55 @@
 
 ```mermaid
 flowchart LR
-    subgraph Client[前端 Web / PWA]
-        Nav[Header + Bottom Tab]
-        Screens[Screen 01~05\n房間/操作計畫/個人主頁]
-        UIState[前端狀態\n(記憶體/快取)]
-        Feedback[Toast / Modal]
-    end
+    %% -------- Client -------------
+  subgraph Client["前端 Web / PWA"]
+    Nav["Header +<br/>Bottom Tab"]
+    Screens["Screen 01~05<br/>房間 / 操作計畫 / 個人主頁"]
+    UIState["前端狀態<br/>(記憶體 / 快取)"]
+    Feedback["Toast / Modal"]
+  end
 
-    subgraph API[後端 API 層]
-        RoomAPI[Rooms API\n列表/創建/加入/退出/刪除]
-        PlanAPI[Operations API\n操作計畫 CRUD]
-        CommentAPI[Comments API\n操作留言]
-        ProfileAPI[Profile API\n個人資訊]
-    end
+  %% -------- API -------------
+  subgraph API["後端 API 層"]
+    RoomAPI["Rooms API<br/>列表 / 創建 / 加入 / 退出 / 刪除"]
+    PlanAPI["Operations API<br/>操作計畫 CRUD"]
+    CommentAPI["Comments API<br/>操作留言"]
+    ProfileAPI["Profile API<br/>個人資訊"]
+  end
 
-    subgraph DB[SQLite / RDB]
-        Users[(users)]
-        Rooms[(rooms)]
-        Members[(room_members)]
-        Plans[(operations)]
-        PlanComments[(operation_comments)]
-    end
+  %% -------- DB -------------
+  subgraph DB["SQLite / RDB"]
+    Users[(users)]
+    Rooms[(rooms)]
+    Members[(room_members)]
+    Plans[(operations)]
+    PlanComments[(operation_comments)]
+  end
 
-    Nav --> Screens
-    Screens --> UIState
-    Screens --> Feedback
+  %% ----- Edges -----
+  Nav --> Screens
+  Screens --> UIState
+  Screens --> Feedback
 
-    Screens -- REST --> RoomAPI
-    Screens -- REST --> PlanAPI
-    Screens -- REST --> CommentAPI
-    Screens -- REST --> ProfileAPI
+  Screens -- REST --> RoomAPI
+  Screens -- REST --> PlanAPI
+  Screens -- REST --> CommentAPI
+  Screens -- REST --> ProfileAPI
 
-    RoomAPI --> Rooms
-    RoomAPI --> Members
-    RoomAPI --> Users
+  RoomAPI --> Rooms
+  RoomAPI --> Members
+  RoomAPI --> Users
 
-    PlanAPI --> Plans
-    PlanAPI --> Rooms
-    PlanAPI --> Users
+  PlanAPI --> Plans
+  PlanAPI --> Rooms
+  PlanAPI --> Users
 
-    CommentAPI --> PlanComments
-    CommentAPI --> Plans
-    CommentAPI --> Users
+  CommentAPI --> PlanComments
+  CommentAPI --> Plans
+  CommentAPI --> Users
 
-    ProfileAPI --> Users
-    ProfileAPI --> Members
+  ProfileAPI --> Users
+  ProfileAPI --> Members
 ```
 
 ### 註解
